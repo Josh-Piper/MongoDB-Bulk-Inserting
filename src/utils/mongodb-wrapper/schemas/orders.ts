@@ -1,3 +1,6 @@
+/**
+ * The orders table declaration.
+ */
 import mongoose from 'mongoose';
 
 const ordersSchema = new mongoose.Schema({

@@ -9,7 +9,7 @@ const connectionConfig = {};
 mongoose.connect(connectionDetails, connectionConfig);
 
 /**
- *
+ * The Customers table.
  */
 class Customers {
   async doesCustomerExist(customerId: string): Promise<boolean> {
@@ -20,7 +20,7 @@ class Customers {
 }
 
 /**
- *
+ * The Orders table.
  */
 class Orders {
   private Customers: Customers;
@@ -29,7 +29,13 @@ class Orders {
     this.Customers = customers;
   }
 
-  async insertOrder(order: Order) {
+  /**
+   *
+   *
+   * @param {Order} order
+   * @returns {Promise<void>}
+   */
+  async insertOrder(order: Order): Promise<void> {
     const { customerId } = order;
     const doesCustomerExist = await this.Customers.doesCustomerExist(customerId);
 
@@ -41,23 +47,40 @@ class Orders {
     await newOrder.save();
   }
 
-  async insertOrders(orders: Order[]) {
-    const ordersToInsert = orders.filter((order) => {
-      const { customerId } = order;
-      return this.Customers.doesCustomerExist(customerId);
-    });
+  /**
+   * Insert multiple orders in the Order table if the customer exists.
+   *
+   * @param {Order[]} orders The orders to insert.
+   * @returns {Promise<void>}
+   */
+  async insertOrders(orders: Order[]): Promise<void> {
+    const uniqueCustomers = new Set(orders.map((order) => order.customerId));
 
-    const newOrders = ordersToInsert.map((order) => new ordersModel(order));
+    // Insert all the orders per customer since a customer might have purchased
+    // multiple products.
+    for (const customerId of uniqueCustomers) {
+      const doesCustomerExist = await this.Customers.doesCustomerExist(customerId);
 
-    await ordersModel.insertMany(newOrders);
+      // Don't insert an order if the customer doesn't exist.
+      if (!doesCustomerExist) {
+        return;
+      }
+
+      // Get all the orders for the customer.
+      const customerOrders = orders.filter((order) => order.customerId === customerId);
+      const newOrders = customerOrders.map((order) => new ordersModel(order));
+
+      await ordersModel.insertMany(newOrders);
+    }
   }
 }
 
 /**
- *
+ * The MongoDB database wrapper.
+ * Allowing the inserting of new orders.
  */
 class MongoDB {
-  private Customers: Customers;
+  public Customers: Customers;
   public Orders: Orders;
 
   constructor() {
