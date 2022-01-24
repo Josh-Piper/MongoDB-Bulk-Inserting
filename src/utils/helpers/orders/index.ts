@@ -16,8 +16,8 @@ export const getOrderFromCSVLine = (csvLine: string): Order | null => {
   }
 
   return {
-    customerId,
     orderId,
+    customerId,
     item,
     quantity: Number(quantity),
   };

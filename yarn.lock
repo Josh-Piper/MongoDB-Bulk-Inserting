@@ -85,6 +85,11 @@
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-9.1.0.tgz#baf17ab2cca3fcce2d322ebc30454bff487efad5"
   integrity sha512-QCWHkbMv4Y5U9oW10Uxbr45qMMSzl4OzijsozynUAgx3kEHUdXB00udx2dWDQ7f2TU2a2uuiFaRZjCe3unPpeg==
 
+"@types/mongo-sanitize@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/mongo-sanitize/-/mongo-sanitize-1.0.1.tgz#3b3457f713f69377103df427c1cd89daf53daa64"
+  integrity sha512-xh7/jNaerAu4rlOoGd+2S0D+rSbQyni58+uSuNbay0ynIaifKZBOKPRMY7Ti/ekqaX8IqX4XAbkq2uMZKpdiig==
+
 "@types/mongoose@^5.11.97":
   version "5.11.97"
   resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.11.97.tgz#80b0357f3de6807eb597262f52e49c3e13ee14d8"
@@ -1211,6 +1216,11 @@ mocha@^9.1.4:
     yargs "16.2.0"
     yargs-parser "20.2.4"
     yargs-unparser "2.0.0"
+
+mongo-sanitize@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/mongo-sanitize/-/mongo-sanitize-1.1.0.tgz#01346b55f90716a42de3a1f957500a11c0752c36"
+  integrity sha512-6gB9AiJD+om2eZLxaPKIP5Q8P3Fr+s+17rVWso7hU0+MAzmIvIMlgTYuyvalDLTtE/p0gczcvJ8A3pbN1XmQ/A==
 
 mongodb-connection-string-url@^2.3.2:
   version "2.4.1"

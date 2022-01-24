@@ -20,3 +20,14 @@ schedule.scheduleJob('Sync Orders', repeatJobDailyAt1Am, async () => {
   // scale the application.
   MongoDB.Orders.insertOrders(orders);
 });
+
+getCSVOrdersFromUrl(url).then((orders) => {
+  MongoDB.Orders.insertOrders(orders).then(() => {
+    console.log('Successfully synced orders.');
+  });
+});
+
+// Since the job is schedule for 1am, we can assume that we have time to
+// sync a large file. However, if we are dealing with a significant amount,
+// then we might also conduct smaller syncs throughout the day or horizontally
+// scale the application.

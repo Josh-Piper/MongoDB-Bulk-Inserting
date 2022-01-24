@@ -1,6 +1,7 @@
 import { customersModel, ordersModel } from './schemas';
 import { config } from '../config';
 import mongoose from 'mongoose';
+import mongoSantize from 'mongo-sanitize';
 import { Order } from '../types';
 
 // Connect to the MongoDB database
@@ -13,7 +14,8 @@ mongoose.connect(connectionDetails, connectionConfig);
  */
 class Customers {
   async doesCustomerExist(customerId: string): Promise<boolean> {
-    const matchedCustomers = await customersModel.find({ customerId }, { customerId: 1 });
+    const santizedCustomerId = mongoSantize(customerId);
+    const matchedCustomers = await customersModel.find({ customerId: santizedCustomerId }, { customerId: 1 });
 
     return matchedCustomers.length > 0;
   }
@@ -30,9 +32,9 @@ class Orders {
   }
 
   /**
+   * Insert a single order in the Order table if the customer exists.
    *
-   *
-   * @param {Order} order
+   * @param {Order} order The order to insert.
    * @returns {Promise<void>}
    */
   async insertOrder(order: Order): Promise<void> {
@@ -55,7 +57,6 @@ class Orders {
    */
   async insertOrders(orders: Order[]): Promise<void> {
     const uniqueCustomers = new Set(orders.map((order) => order.customerId));
-
     // Insert all the orders per customer since a customer might have purchased
     // multiple products.
     for (const customerId of uniqueCustomers) {
@@ -63,12 +64,13 @@ class Orders {
 
       // Don't insert an order if the customer doesn't exist.
       if (!doesCustomerExist) {
-        return;
+        continue;
       }
 
       // Get all the orders for the customer.
       const customerOrders = orders.filter((order) => order.customerId === customerId);
-      const newOrders = customerOrders.map((order) => new ordersModel(order));
+      const customerOrdersSantized = customerOrders.map(mongoSantize);
+      const newOrders = customerOrdersSantized.map((order) => new ordersModel(order));
 
       await ordersModel.insertMany(newOrders);
     }
