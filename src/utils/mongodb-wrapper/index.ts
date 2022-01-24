@@ -32,24 +32,6 @@ class Orders {
   }
 
   /**
-   * Insert a single order in the Order table if the customer exists.
-   *
-   * @param {Order} order The order to insert.
-   * @returns {Promise<void>}
-   */
-  async insertOrder(order: Order): Promise<void> {
-    const { customerId } = order;
-    const doesCustomerExist = await this.Customers.doesCustomerExist(customerId);
-
-    if (!doesCustomerExist) {
-      return;
-    }
-
-    const newOrder = new ordersModel(order);
-    await newOrder.save();
-  }
-
-  /**
    * Insert multiple orders in the Order table if the customer exists.
    *
    * @param {Order[]} orders The orders to insert.
@@ -59,7 +41,6 @@ class Orders {
     const uniqueCustomers = new Set(orders.map((order) => order.customerId));
     const bulkInsertOrders = [];
 
-    console.log(uniqueCustomers);
     for (const customerId of uniqueCustomers) {
       const doesCustomerExist = await this.Customers.doesCustomerExist(customerId);
 
@@ -92,7 +73,6 @@ class Orders {
     // using too many connections. Moreover, databases are
     // optimised for this.
     const res = await ordersModel.bulkWrite(bulkInsertOrders);
-    console.log('res', res);
   }
 }
 
