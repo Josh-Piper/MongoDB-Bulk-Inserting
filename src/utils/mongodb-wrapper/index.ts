@@ -57,23 +57,42 @@ class Orders {
    */
   async insertOrders(orders: Order[]): Promise<void> {
     const uniqueCustomers = new Set(orders.map((order) => order.customerId));
-    // Insert all the orders per customer since a customer might have purchased
-    // multiple products.
+    const bulkInsertOrders = [];
+
+    console.log(uniqueCustomers);
     for (const customerId of uniqueCustomers) {
       const doesCustomerExist = await this.Customers.doesCustomerExist(customerId);
 
-      // Don't insert an order if the customer doesn't exist.
+      // If the customer doesn't exist, then don't insert the order.
       if (!doesCustomerExist) {
         continue;
       }
 
-      // Get all the orders for the customer.
+      // Get the customers order details
       const customerOrders = orders.filter((order) => order.customerId === customerId);
-      const customerOrdersSantized = customerOrders.map(mongoSantize);
-      const newOrders = customerOrdersSantized.map((order) => new ordersModel(order));
+      const sanitizedCustomerOrders = customerOrders.map(mongoSantize);
 
-      await ordersModel.insertMany(newOrders);
+      // Add the orders to the bulk insert array.
+      if (sanitizedCustomerOrders.length === 1) {
+        bulkInsertOrders.push({
+          insertOne: {
+            document: sanitizedCustomerOrders[0],
+          },
+        });
+      } else {
+        bulkInsertOrders.push({
+          insertMany: {
+            documents: sanitizedCustomerOrders,
+          },
+        });
+      }
     }
+
+    // Insert all the documents as a bulk update to prevent
+    // using too many connections. Moreover, databases are
+    // optimised for this.
+    const res = await ordersModel.bulkWrite(bulkInsertOrders);
+    console.log('res', res);
   }
 }
 
