@@ -13,4 +13,5 @@ export const config: GlobalConfiguration = {
   dbPassword: process.env.DB_PASSWORD ?? '',
   dbCluster: process.env.DB_CLUSTER ?? '',
   dbDatabase: process.env.DB_DATABASE ?? '',
+  loggingLevel: Number(process.env.LOGGING_LEVEL) ?? 0,
 };

@@ -1,3 +1,6 @@
+/**
+ * The customers table declaration.
+ */
 import mongoose, { Schema } from 'mongoose';
 
 const customersSchema = new Schema({

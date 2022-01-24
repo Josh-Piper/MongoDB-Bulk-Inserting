@@ -3,6 +3,7 @@ import { config } from '../config';
 import mongoose from 'mongoose';
 import mongoSantize from 'mongo-sanitize';
 import { Order } from '../types';
+import logger from '../logger';
 
 // Connect to the MongoDB database
 const connectionDetails = `mongodb+srv://${config.dbUsername}:${config.dbPassword}@${config.dbCluster}.mongodb.net/${config.dbDatabase}?retryWrites=true&w=majority`;
@@ -46,6 +47,7 @@ class Orders {
 
       // If the customer doesn't exist, then don't insert the order.
       if (!doesCustomerExist) {
+        logger.info('Customer %s does not exist, skipping order', customerId);
         continue;
       }
 
@@ -72,7 +74,8 @@ class Orders {
     // Insert all the documents as a bulk update to prevent
     // using too many connections. Moreover, databases are
     // optimised for this.
-    const res = await ordersModel.bulkWrite(bulkInsertOrders);
+    await ordersModel.bulkWrite(bulkInsertOrders);
+    logger.info('Finished bulk update');
   }
 }
 

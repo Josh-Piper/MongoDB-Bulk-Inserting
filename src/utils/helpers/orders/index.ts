@@ -1,4 +1,5 @@
 import axios from 'axios';
+import logger from '../../logger';
 import { Order } from '../../types';
 
 /**
@@ -12,6 +13,7 @@ export const getOrderFromCSVLine = (csvLine: string): Order | null => {
 
   // Ensure that each column exists.
   if (!orderId || !customerId || !item || !quantity) {
+    logger.info('CSV line invalid: %s', csvLine);
     return null;
   }
 
@@ -31,11 +33,13 @@ export const getOrderFromCSVLine = (csvLine: string): Order | null => {
  */
 export const convertCSVOrdersToMongoOrders = (csvOrders: string[]): Order[] => {
   if (csvOrders.length === 0) {
+    logger.info('No orders to insert');
     return [];
   }
 
   // If the headers are included, then don't include them.
   if (csvOrders[0] === 'orderId,customerId,item,quantity') {
+    logger.info('CSV headers found, skipping them');
     csvOrders.shift();
   }
 

@@ -7,4 +7,5 @@ export interface GlobalConfiguration {
   dbPassword: string;
   dbCluster: string;
   dbDatabase: string;
+  loggingLevel: number;
 }
